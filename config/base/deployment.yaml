@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
         - name: envoy-ai-gateway-dashboard
-          image: ghcr.io/datum-cloud/envoy-ai-gateway-dashboard:latest
+          image: ghcr.io/datum-labs/envoy-ai-gateway-dashboard:latest
           imagePullPolicy: Always
           ports:
             - name: http
