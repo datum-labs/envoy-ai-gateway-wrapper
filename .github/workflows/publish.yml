@@ -21,6 +21,7 @@ jobs:
     with:
       image-name: envoy-ai-gateway-dashboard
       target: production
+      registry-organization: datum-labs
     secrets: inherit
 
   publish-kustomize-bundles:
@@ -31,8 +32,8 @@ jobs:
       packages: write
     uses: datum-cloud/actions/.github/workflows/publish-kustomize-bundle.yaml@v1.20.0
     with:
-      bundle-name: ghcr.io/datum-cloud/envoy-ai-gateway-dashboard-kustomize
+      bundle-name: ghcr.io/datum-labs/envoy-ai-gateway-dashboard-kustomize
+      image-name: ghcr.io/datum-labs/envoy-ai-gateway-dashboard
       bundle-path: config/base
       image-overlays: config/base
-      image-name: ghcr.io/datum-cloud/envoy-ai-gateway-dashboard
     secrets: inherit
