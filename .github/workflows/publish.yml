@@ -1,0 +1,38 @@
+name: Publish
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "README.md"
+      - ".env.example"
+
+  release:
+    types: ["published"]
+
+jobs:
+  build-and-push:
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    uses: datum-cloud/actions/.github/workflows/publish-docker.yaml@v1.20.0
+    with:
+      image-name: envoy-ai-gateway-dashboard
+      target: production
+    secrets: inherit
+
+  publish-kustomize-bundles:
+    needs: build-and-push
+    permissions:
+      id-token: write
+      contents: read
+      packages: write
+    uses: datum-cloud/actions/.github/workflows/publish-kustomize-bundle.yaml@v1.20.0
+    with:
+      bundle-name: ghcr.io/datum-cloud/envoy-ai-gateway-dashboard-kustomize
+      bundle-path: config/base
+      image-overlays: config/base
+      image-name: ghcr.io/datum-cloud/envoy-ai-gateway-dashboard
+    secrets: inherit

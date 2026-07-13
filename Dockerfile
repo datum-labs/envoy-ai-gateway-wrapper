@@ -28,12 +28,15 @@ COPY . .
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
+ARG BASE_PATH
+ENV BASE_PATH=${BASE_PATH}
+
 RUN corepack enable pnpm && pnpm build
 
 # ============================================
 # Stage 3: Production runtime
 # ============================================
-FROM node:${NODE_VERSION} AS runner
+FROM node:${NODE_VERSION} AS production
 
 WORKDIR /app
 
