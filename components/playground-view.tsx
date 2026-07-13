@@ -29,7 +29,7 @@ import {
   MessageFooter,
 } from '@/components/ui/message'
 import { Bubble, BubbleContent } from '@/components/ui/bubble'
-import { fetcher } from '@/lib/client'
+import { apiUrl, fetcher } from '@/lib/client'
 import { PageHeader } from '@/components/page-header'
 import { formatCurrencyPrecise, formatLatency } from '@/lib/format'
 
@@ -80,7 +80,7 @@ export function PlaygroundView() {
     abortRef.current = controller
 
     try {
-      const res = await fetch('/api/chat', {
+      const res = await fetch(apiUrl('/api/chat'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         signal: controller.signal,

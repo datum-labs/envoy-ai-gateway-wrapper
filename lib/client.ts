@@ -1,7 +1,12 @@
 import type { TimeRange } from './types'
 
+export const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? ''
+
+export const apiUrl = (path: string) =>
+  path.startsWith('/') ? `${BASE_PATH}${path}` : path
+
 export const fetcher = async (url: string) => {
-  const res = await fetch(url)
+  const res = await fetch(apiUrl(url))
   if (!res.ok) throw new Error('Request failed')
   return res.json()
 }
