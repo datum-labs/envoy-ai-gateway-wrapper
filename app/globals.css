@@ -1,0 +1,115 @@
+@import 'tailwindcss';
+
+/* Datum design system — tokens, shadcn base, tw-animate, and the `alpha`
+ * theme (glacier-mist surfaces, canyon-clay primary, midnight-fjord text).
+ * This is the SINGLE source of truth for colors, radii, and base styles.
+ * Do not also import the default `shadcn/tailwind.css` — it ships the stock
+ * shadcn chart palette (green/teal) and Inter, which conflict with Datum. */
+@import '@datum-cloud/datum-ui/styles';
+
+/* Canela Text display font — provides the --font-title value. */
+@import '@datum-cloud/datum-ui/styles/canela';
+
+/* Register Datum's fonts as Tailwind v4 utilities so `font-sans` and
+ * `font-title` actually generate classes. These override the Inter default
+ * that datum-ui's shadcn.css sets. */
+@theme {
+  --font-sans:
+    'Alliance No1', 'FTRegolaNeue', ui-sans-serif, system-ui, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji';
+  --font-title:
+    'Canela Text', 'Canela Text LC Web', ui-serif, Georgia, serif;
+  --font-mono:
+    ui-monospace, 'SF Mono', 'SFMono-Regular', 'Cascadia Code', 'Roboto Mono',
+    Menlo, Consolas, monospace;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Subtle motion system
+ * Entrance reveals, hover lifts, and micro-interactions. All motion is
+ * disabled under prefers-reduced-motion for accessibility.
+ * ------------------------------------------------------------------ */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Entrance reveal — pairs with an inline animation-delay for stagger.
+ * Kept short so it reads as a subtle settle, never as a loading delay. */
+.reveal {
+  opacity: 0;
+  animation-name: fade-up;
+  animation-duration: 240ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation-fill-mode: forwards;
+}
+
+.reveal-fade {
+  opacity: 0;
+  animation-name: fade-in;
+  animation-duration: 240ms;
+  animation-timing-function: ease;
+  animation-fill-mode: forwards;
+}
+
+/* Interactive surface — gentle lift + shadow on hover. */
+.lift {
+  transition:
+    transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.2s ease;
+  will-change: transform;
+}
+.lift:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 1px 2px -1px rgb(0 0 0 / 0.08),
+    0 8px 24px -8px rgb(0 0 0 / 0.12);
+}
+
+/* Press feedback for clickable rows / tiles. */
+.press {
+  transition: transform 0.12s ease;
+}
+.press:active {
+  transform: scale(0.985);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal-fade {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+  .lift,
+  .press {
+    transition: none !important;
+  }
+  .lift:hover {
+    transform: none !important;
+  }
+}
