@@ -28,7 +28,7 @@ COPY . .
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-ARG BASE_PATH
+ARG BASE_PATH=/dashboard
 ENV BASE_PATH=${BASE_PATH}
 
 RUN corepack enable pnpm && pnpm build
