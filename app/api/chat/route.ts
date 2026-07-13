@@ -1,7 +1,16 @@
+import { readFileSync } from 'fs'
 import { MODEL_CATALOG } from '@/lib/demo'
 
 const GATEWAY_URL = process.env.ENVOY_AI_GATEWAY_URL?.replace(/\/$/, '') || null
 const GATEWAY_API_KEY = process.env.ENVOY_AI_GATEWAY_API_KEY || null
+const GATEWAY_TOKEN_FILE = process.env.ENVOY_AI_GATEWAY_TOKEN_FILE || null
+
+function gatewayToken(): string | null {
+  if (GATEWAY_TOKEN_FILE) {
+    try { return readFileSync(GATEWAY_TOKEN_FILE, 'utf-8').trim() } catch { return null }
+  }
+  return GATEWAY_API_KEY
+}
 
 interface ChatMessage {
   role: 'system' | 'user' | 'assistant'
@@ -64,11 +73,12 @@ async function liveStream(
   const start = Date.now()
   let ttft = 0
   let outputTokens = 0
+  const token = gatewayToken()
   const res = await fetch(`${GATEWAY_URL}/v1/chat/completions`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      ...(GATEWAY_API_KEY ? { Authorization: `Bearer ${GATEWAY_API_KEY}` } : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify({ model, messages, temperature, stream: true }),
   })
