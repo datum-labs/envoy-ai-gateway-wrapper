@@ -1,3 +1,6 @@
+// Set BASE_PATH at image build time to override (e.g. BASE_PATH='' for root).
+const basePath = process.env.BASE_PATH ?? "/dashboard";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Cache Components: prerender the shell + data layer with `use cache`,
@@ -5,8 +8,10 @@ const nextConfig = {
   cacheComponents: true,
   // Output a self-contained server bundle for Docker deployments.
   output: "standalone",
-  // Set BASE_PATH at image build time to override (e.g. BASE_PATH='' for root).
-  basePath: process.env.BASE_PATH ?? "/dashboard",
+  basePath,
+  // Next.js prefixes basePath onto <Link>/router/assets but NOT fetch(); expose
+  // it so client-side API calls can prefix it themselves (see lib/client.ts).
+  env: { NEXT_PUBLIC_BASE_PATH: basePath },
   images: {
     unoptimized: true,
   },

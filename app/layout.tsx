@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { Analytics } from "@vercel/analytics/next";
 import { Providers } from "@/components/providers";
 import "./globals.css";
 
@@ -29,7 +28,6 @@ export default function RootLayout({
     <html lang="en" className="bg-background" suppressHydrationWarning>
       <body className="font-sans antialiased">
         <Providers>{children}</Providers>
-        {process.env.NODE_ENV === "production" && <Analytics />}
       </body>
     </html>
   );
