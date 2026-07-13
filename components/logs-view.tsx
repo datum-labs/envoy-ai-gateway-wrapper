@@ -187,8 +187,8 @@ export function LogsView({
           </p>
           <div className="flex items-center gap-2">
             <Button
-              variant="outline"
-              size="sm"
+              theme="outline"
+              size="small"
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
             >
@@ -198,8 +198,8 @@ export function LogsView({
               {page} / {totalPages}
             </span>
             <Button
-              variant="outline"
-              size="sm"
+              theme="outline"
+              size="small"
               disabled={page >= totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             >

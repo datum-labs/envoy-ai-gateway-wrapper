@@ -1,0 +1,47 @@
+# Dependencies (installed inside Docker)
+node_modules/
+.pnpm-store/
+npm-debug.log*
+pnpm-debug.log*
+
+# Build outputs (generated during `next build`)
+.next/
+out/
+.vercel/
+
+# Local development and editor files
+.git/
+.gitignore
+.vscode/
+.idea/
+*.log
+
+# Environment variables
+.env
+.env*.local
+
+# Docker files (not needed inside the build context)
+Dockerfile*
+.dockerignore
+compose.yaml
+compose.yml
+docker-compose*.yaml
+docker-compose*.yml
+
+# Documentation
+*.md
+
+# Cache and temp
+.cache/
+.eslintcache
+.turbo/
+*.tsbuildinfo
+
+# OS junk
+.DS_Store
+
+# AI tool metadata
+.cursor/
+.cursorrules
+.claude
+AGENTS.md

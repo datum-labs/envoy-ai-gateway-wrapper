@@ -256,7 +256,7 @@ export function PlaygroundView() {
                 className="max-h-32 min-h-[42px] resize-none"
               />
               {streaming ? (
-                <Button variant="outline" size="icon" onClick={stop} aria-label="Stop">
+                <Button theme="outline" size="icon" onClick={stop} aria-label="Stop">
                   <Square className="size-4" />
                 </Button>
               ) : (
@@ -305,7 +305,7 @@ export function PlaygroundView() {
           </div>
 
           <Button
-            variant="outline"
+            theme="outline"
             onClick={() => setMessages([])}
             disabled={messages.length === 0 || streaming}
             className="w-full"

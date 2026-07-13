@@ -49,6 +49,26 @@ pnpm build   # check the production build locally first
 
 If you're connecting a live gateway, add the same environment variables under **Settings → Environment Variables** in your Vercel project.
 
+### Docker
+
+The repo ships with a multi-stage `Dockerfile` that uses Next.js [standalone output](https://nextjs.org/docs/app/api-reference/config/next-config-js/output), so the final image only contains the files the app actually needs.
+
+```bash
+docker build -t envoy-ai-gateway-console .
+docker run -p 3000:3000 envoy-ai-gateway-console
+```
+
+That runs the console in demo mode on `http://localhost:3000`. To connect a live gateway, pass the environment variables at runtime:
+
+```bash
+docker run -p 3000:3000 \
+  -e ENVOY_AI_GATEWAY_URL=https://your-gateway.example.com/v1 \
+  -e ENVOY_AI_GATEWAY_API_KEY=your-token \
+  envoy-ai-gateway-console
+```
+
+Or with an env file: `docker run -p 3000:3000 --env-file .env.local envoy-ai-gateway-console`.
+
 ## How it's built
 
 - [Next.js 16](https://nextjs.org/) with the App Router and Cache Components enabled.
