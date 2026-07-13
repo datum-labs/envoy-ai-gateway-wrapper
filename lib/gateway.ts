@@ -1,4 +1,5 @@
 import 'server-only'
+import { readFileSync } from 'fs'
 import { computeModelDetail, computeModels, computeOverview } from './aggregate'
 import { getDataset, MODEL_CATALOG } from './demo'
 import { parsePrometheus } from './prometheus'
@@ -14,6 +15,7 @@ import type {
 
 const GATEWAY_URL = process.env.ENVOY_AI_GATEWAY_URL?.replace(/\/$/, '') || null
 const GATEWAY_API_KEY = process.env.ENVOY_AI_GATEWAY_API_KEY || null
+const GATEWAY_TOKEN_FILE = process.env.ENVOY_AI_GATEWAY_TOKEN_FILE || null
 const METRICS_URL = process.env.ENVOY_AI_GATEWAY_METRICS_URL?.replace(/\/$/, '') || null
 
 export function dataSource(): DataSourceInfo {
@@ -21,7 +23,11 @@ export function dataSource(): DataSourceInfo {
 }
 
 function authHeaders(): Record<string, string> {
-  return GATEWAY_API_KEY ? { Authorization: `Bearer ${GATEWAY_API_KEY}` } : {}
+  let token = GATEWAY_API_KEY
+  if (GATEWAY_TOKEN_FILE) {
+    try { token = readFileSync(GATEWAY_TOKEN_FILE, 'utf-8').trim() } catch { token = null }
+  }
+  return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
 /**
