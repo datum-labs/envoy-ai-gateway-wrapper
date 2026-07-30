@@ -29,7 +29,7 @@ export function ModelsView({ initial }: { initial?: ModelsResponse }) {
     <div className="flex flex-col gap-6">
       <PageHeader
         title="Models"
-        description="Every model available through your gateway, with live usage and pricing."
+        description="Every model available through your gateway, with live usage."
         actions={<RangeSelector value={range} onChange={setRange} />}
       />
 
@@ -57,9 +57,11 @@ export function ModelsView({ initial }: { initial?: ModelsResponse }) {
 
               <div className="flex items-center gap-2">
                 <ProviderBadge provider={m.provider} />
-                <span className="text-xs text-muted-foreground">
-                  {formatNumber(m.contextWindow)} ctx
-                </span>
+                {m.contextWindow > 0 && (
+                  <span className="text-xs text-muted-foreground">
+                    {formatNumber(m.contextWindow)} ctx
+                  </span>
+                )}
               </div>
 
               <div className="mt-auto grid grid-cols-3 gap-2 border-t border-border pt-3 text-center">
@@ -69,7 +71,9 @@ export function ModelsView({ initial }: { initial?: ModelsResponse }) {
               </div>
               <div className="flex items-center justify-between text-xs text-muted-foreground">
                 <span>
-                  ${m.inputPricePerM}/M in · ${m.outputPricePerM}/M out
+                  {m.inputPricePerM > 0 || m.outputPricePerM > 0
+                    ? `$${m.inputPricePerM}/M in · $${m.outputPricePerM}/M out`
+                    : 'Pricing unavailable'}
                 </span>
                 <span className={m.errorRate > 0.02 ? 'text-destructive' : ''}>
                   {formatPercent(m.errorRate)} err

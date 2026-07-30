@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import useSWR from 'swr'
 import {
   Sidebar,
   SidebarContent,
@@ -27,6 +28,8 @@ import {
   Trophy,
 } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { fetcher } from '@/lib/client'
+import type { DataSourceInfo } from '@/lib/types'
 
 const nav = [
   { title: 'Overview', href: '/', icon: LayoutDashboard },
@@ -39,6 +42,32 @@ const nav = [
 function isActive(pathname: string, href: string) {
   if (href === '/') return pathname === '/'
   return pathname === href || pathname.startsWith(`${href}/`)
+}
+
+function DataSourceFooter() {
+  const { data } = useSWR<{ source: DataSourceInfo }>('/api/meta', fetcher, {
+    refreshInterval: 60_000,
+  })
+  const source = data?.source
+  const label =
+    source?.metrics === 'live'
+      ? 'Live metrics'
+      : source?.mode === 'live'
+        ? 'Live gateway · metrics unavailable'
+        : 'Gateway not configured'
+  const color =
+    source?.metrics === 'live'
+      ? 'bg-chart-4'
+      : source?.mode === 'live'
+        ? 'bg-chart-3'
+        : 'bg-muted-foreground'
+
+  return (
+    <div className="flex items-center gap-2 px-2 py-1.5 text-xs text-muted-foreground">
+      <span className={`inline-flex size-2 rounded-full ${color}`} aria-hidden />
+      {label}
+    </div>
+  )
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -80,10 +109,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter className="border-t border-sidebar-border">
-          <div className="flex items-center gap-2 px-2 py-1.5 text-xs text-muted-foreground">
-            <span className="inline-flex size-2 rounded-full bg-chart-4" aria-hidden />
-            Demo data source
-          </div>
+          <DataSourceFooter />
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>

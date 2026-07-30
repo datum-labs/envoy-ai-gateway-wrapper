@@ -1,70 +1,159 @@
 import 'server-only'
 import { cacheLife, cacheTag } from 'next/cache'
-import { computeModelDetail, computeModels, computeOverview } from './aggregate'
-import { getDataset, MODEL_CATALOG } from './demo'
+import {
+  fetchGatewayModels,
+  getPreferredGatewayModel,
+  isAiGatewayConfigured,
+} from './ai-gateway'
 import { dataSource } from './gateway'
-import type { LogsResponse, TimeRange } from './types'
+import {
+  emptyLiveOverview,
+  fetchLiveMetrics,
+  fetchLiveModelDetail,
+} from './live-metrics'
+import type { LogsResponse, ModelStat, TimeRange } from './types'
+
+function catalogModelsAsStats(
+  catalog: { id: string; name: string; provider: string }[],
+): ModelStat[] {
+  return catalog.map((m) => ({
+    id: m.id,
+    name: m.name,
+    provider: m.provider,
+    requests: 0,
+    totalTokens: 0,
+    inputTokens: 0,
+    outputTokens: 0,
+    cost: 0,
+    avgLatency: 0,
+    p95Latency: 0,
+    avgTtft: 0,
+    errorRate: 0,
+    tokensPerSec: 0,
+    trendPct: 0,
+    contextWindow: 0,
+    inputPricePerM: 0,
+    outputPricePerM: 0,
+  }))
+}
 
 /**
  * Cached server data layer for Cache Components.
  *
  * Each exported function is a `use cache` entry point keyed only by its
  * serializable arguments (range / id). Results land in the Next.js data
- * cache and are reused across requests, and pages await them so the initial
- * HTML already contains data — removing the post-hydration fetch waterfall.
+ * cache and are reused across requests. Pages await them so the initial
+ * HTML already contains data.
  *
- * The demo dataset is deterministic and anchored to a single `Date.now()`
- * captured the first time `getDataset()` runs. We warm it here at module load
- * so that one-time, non-deterministic anchor executes OUTSIDE any `use cache`
- * scope; inside the cached functions `getDataset()` only returns the memoized
- * value, keeping the cached output fully reproducible.
+ * All metrics come from the live gateway / Prometheus path. When the
+ * gateway is not configured or metrics are unreachable, callers get empty
+ * structures — never synthetic sample traffic.
  */
-getDataset()
-
-const DAY_MS = 24 * 60 * 60 * 1000
-
 export async function getOverviewData(range: TimeRange) {
   'use cache'
   cacheLife('minutes')
   cacheTag('gateway-data', `overview:${range}`)
-  const { logs, now } = getDataset()
-  return { overview: computeOverview(logs, now, range), source: dataSource() }
+
+  if (!isAiGatewayConfigured()) {
+    return { overview: emptyLiveOverview(range), source: dataSource() }
+  }
+
+  const live = await fetchLiveMetrics(range)
+  if (live) {
+    return { overview: live.overview, source: dataSource('live') }
+  }
+  return { overview: emptyLiveOverview(range), source: dataSource('unavailable') }
 }
 
 export async function getModelsData(range: TimeRange) {
   'use cache'
   cacheLife('minutes')
   cacheTag('gateway-data', `models:${range}`)
-  const { logs, now } = getDataset()
-  return { models: computeModels(logs, now, range), source: dataSource() }
+
+  if (!isAiGatewayConfigured()) {
+    return { models: [], source: dataSource() }
+  }
+
+  const live = await fetchLiveMetrics(range)
+  if (live) {
+    return { models: live.models, source: dataSource('live') }
+  }
+
+  // Metrics missing — still list the live catalog with zeroed stats.
+  try {
+    const catalog = await fetchGatewayModels()
+    return {
+      models: catalogModelsAsStats(catalog),
+      source: dataSource('unavailable'),
+    }
+  } catch {
+    return { models: [], source: dataSource('unavailable') }
+  }
 }
 
 export async function getModelDetailData(id: string, range: TimeRange) {
   'use cache'
   cacheLife('minutes')
   cacheTag('gateway-data', `model:${id}:${range}`)
-  const { logs, now } = getDataset()
-  return { model: computeModelDetail(id, logs, now, range), source: dataSource() }
+
+  if (!isAiGatewayConfigured()) {
+    return { model: null, source: dataSource() }
+  }
+
+  const live = await fetchLiveMetrics(range)
+  const model = await fetchLiveModelDetail(id, range, live)
+  return {
+    model,
+    source: dataSource(live ? 'live' : 'unavailable'),
+  }
 }
 
-/** First page of unfiltered logs for the default 24h view (seeds first paint). */
+/** First page of logs for the default 24h view (seeds first paint). */
 export async function getDefaultLogsData(): Promise<LogsResponse> {
   'use cache'
   cacheLife('minutes')
   cacheTag('gateway-data', 'logs:default')
-  const { logs, now } = getDataset()
-  const from = now - DAY_MS
-  const filtered = logs.filter((l) => l.timestamp >= from)
-  return { logs: filtered.slice(0, 20), total: filtered.length, page: 1, pageSize: 20 }
+
+  // No live log backend yet — keep empty rather than synthetic rows.
+  return { logs: [], total: 0, page: 1, pageSize: 20 }
 }
 
 export async function getMetaData() {
   'use cache'
-  cacheLife('hours')
+  cacheLife('minutes')
   cacheTag('gateway-meta')
-  return {
-    models: MODEL_CATALOG.map((m) => ({ id: m.id, name: m.name, provider: m.provider })),
-    providers: Array.from(new Set(MODEL_CATALOG.map((m) => m.provider))),
-    source: dataSource(),
+
+  const preferredModel = getPreferredGatewayModel()
+
+  if (!isAiGatewayConfigured()) {
+    return {
+      models: [],
+      providers: [],
+      preferredModel,
+      source: dataSource(),
+    }
+  }
+
+  const live = await fetchLiveMetrics('24h')
+  const source = dataSource(live ? 'live' : 'unavailable')
+  try {
+    const gatewayModels = await fetchGatewayModels()
+    return {
+      models: gatewayModels.map((m) => ({
+        id: m.id,
+        name: m.name,
+        provider: m.provider,
+      })),
+      providers: Array.from(new Set(gatewayModels.map((m) => m.provider))),
+      preferredModel,
+      source,
+    }
+  } catch {
+    return {
+      models: [],
+      providers: [],
+      preferredModel,
+      source,
+    }
   }
 }

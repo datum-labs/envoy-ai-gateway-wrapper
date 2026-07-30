@@ -10,6 +10,11 @@
 /* Canela Text display font — provides the --font-title value. */
 @import '@datum-cloud/datum-ui/styles/canela';
 
+/* Scan streamdown packages so markdown/code chips in assistant messages keep styles. */
+@source '../node_modules/streamdown/dist/*.js';
+@source '../node_modules/@streamdown/code/dist/*.js';
+@source '../node_modules/@datum-cloud/datum-ui/dist/**/*.js';
+
 /* Register Datum's fonts as Tailwind v4 utilities so `font-sans` and
  * `font-title` actually generate classes. These override the Inter default
  * that datum-ui's shadcn.css sets. */
@@ -31,6 +36,24 @@
   body {
     @apply bg-background text-foreground font-sans;
   }
+}
+
+/* TipTap editor placeholder (PromptCard composer). */
+.tiptap p.is-editor-empty:first-child {
+  position: relative;
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--color-muted-foreground);
+  opacity: 0.5;
+  pointer-events: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* ------------------------------------------------------------------ *

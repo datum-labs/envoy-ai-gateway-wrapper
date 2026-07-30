@@ -4,7 +4,7 @@ import { ModelsView } from "@/components/models-view";
 export const metadata: Metadata = {
   title: "Models",
   description:
-    "Every model available through your gateway, with live usage and pricing.",
+    "Every model available through your gateway, with live usage.",
 };
 
 export default function Page() {

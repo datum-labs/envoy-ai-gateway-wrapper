@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
 import useSWR from 'swr'
 import { ArrowLeft, Activity, CircleDollarSign, Gauge, Timer, TriangleAlert, Zap } from 'lucide-react'
 import { Card } from '@datum-cloud/datum-ui/card'
@@ -38,16 +39,28 @@ function ChartCard({ title, description, children }: { title: string; descriptio
   )
 }
 
-export function ModelDetailView({ id, initial }: { id: string; initial?: DetailResponse }) {
+export function ModelDetailView({ initial }: { initial?: DetailResponse } = {}) {
+  const params = useParams<{ id: string }>()
+  const id = decodeURIComponent(String(params?.id ?? ''))
   const [range, setRange] = useState<TimeRange>('24h')
   const { data, error } = useSWR<DetailResponse>(
-    `/api/models/${encodeURIComponent(id)}?range=${range}`,
+    id ? `/api/models/${encodeURIComponent(id)}?range=${range}` : null,
     fetcher,
     { fallbackData: initial, keepPreviousData: true },
   )
 
   const m = data?.model
 
+  if (!id) {
+    return (
+      <div className="flex flex-col items-center gap-3 py-20 text-center">
+        <p className="text-lg font-medium text-foreground">Model not found</p>
+        <Link href="/models" className="text-sm text-primary hover:underline">
+          Back to models
+        </Link>
+      </div>
+    )
+  }
   if (error) {
     return (
       <div className="flex flex-col items-center gap-3 py-20 text-center">
@@ -112,7 +125,7 @@ export function ModelDetailView({ id, initial }: { id: string; initial?: DetailR
         <ChartCard title="Latency" description="p50 and p95 response time">
           {m ? <LatencyChart series={m.series} /> : <Skeleton />}
         </ChartCard>
-        <ChartCard title="Spend over time" description="Estimated cost in USD">
+        <ChartCard title="Spend over time" description="USD when the gateway reports pricing">
           {m ? <CostChart series={m.series} /> : <Skeleton />}
         </ChartCard>
         <ChartCard title="Latency distribution" description="Request count by latency bucket">

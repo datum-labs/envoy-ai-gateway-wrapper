@@ -80,7 +80,7 @@ export function LogsView({
     <div className="flex flex-col gap-6">
       <PageHeader
         title="Logs"
-        description="Every request routed through the gateway, with token usage, latency, and cost."
+        description="Per-request access logs will appear here once a log backend is wired (Loki/OTLP)."
         actions={<RangeSelector value={range} onChange={resetPageThen(setRange)} />}
       />
 
@@ -171,7 +171,8 @@ export function LogsView({
               ) : (
                 <TableRow>
                   <TableCell colSpan={6} className="py-10 text-center text-muted-foreground">
-                    No requests match your filters.
+                    No request logs available yet. Live rows need Envoy AI Gateway access logs
+                    shipped to a queryable store (e.g. Loki).
                   </TableCell>
                 </TableRow>
               )}

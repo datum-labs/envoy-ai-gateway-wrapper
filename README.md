@@ -2,7 +2,7 @@
 
 This is a read-only console that sits in front of an [Envoy AI Gateway](https://aigateway.envoyproxy.io/) and shows you what's going through it: how many requests, how much you're spending, how fast responses come back, and which models are getting used. It also has a playground for sending test prompts through the gateway.
 
-It runs in demo mode out of the box. Point it at a real gateway when you're ready, no code changes needed.
+All dashboard numbers and Playground traffic come from a live gateway. There is no built-in demo dataset — configure URL + token before expecting data.
 
 ## Pages
 
@@ -18,10 +18,11 @@ You'll need Node 18+ and pnpm.
 
 ```bash
 pnpm install
+cp .env.example .env.local   # then fill in gateway URL + token
 pnpm dev
 ```
 
-That starts the app on `http://localhost:3000` in demo mode with deterministic sample data. Nothing else to configure.
+That starts the app on `http://localhost:3000`. Without gateway env vars the shell still loads, but pages stay empty and Playground chat returns 503.
 
 ## Connecting a real gateway
 
@@ -33,11 +34,17 @@ cp .env.example .env.local
 
 | Variable                       | Required | What it does                                                                                                          |
 | ------------------------------ | -------- | --------------------------------------------------------------------------------------------------------------------- |
-| `ENVOY_AI_GATEWAY_URL`         | No       | Base URL of your gateway's OpenAI-compatible endpoint. Setting this switches the console from demo mode to live mode. |
-| `ENVOY_AI_GATEWAY_API_KEY`     | No       | Bearer token sent with gateway and metrics requests.                                                                  |
-| `ENVOY_AI_GATEWAY_METRICS_URL` | No       | Override for the Prometheus metrics endpoint. Defaults to `${ENVOY_AI_GATEWAY_URL}/metrics`.                          |
+| `ENVOY_AI_GATEWAY_URL`         | Yes*     | Base URL of your gateway (no path).                                                                                   |
+| `ENVOY_AI_GATEWAY_API_KEY`     | Yes*     | Bearer token sent with gateway and metrics requests (local Dex JWT).                                                  |
+| `ENVOY_AI_GATEWAY_TOKEN_FILE`  | Yes*     | Path to a projected SA token file; used when `ENVOY_AI_GATEWAY_API_KEY` is unset.                                     |
+| `ENVOY_AI_GATEWAY_MODEL`       | No       | Preferred Playground model id when it appears in the gateway catalog.                                                 |
+| `ENVOY_AI_GATEWAY_METRICS_URL` | No       | Prometheus/VictoriaMetrics base URL (PromQL) or a raw `/metrics` scrape URL. Powers Overview, Models, and Leaderboard. |
 
-All three are optional. Leave them blank and you stay in demo mode.
+\* Live mode requires `ENVOY_AI_GATEWAY_URL` plus either `ENVOY_AI_GATEWAY_API_KEY` or `ENVOY_AI_GATEWAY_TOKEN_FILE`.
+
+In live mode the Playground discovers models from both `/v1/models` (OpenAI-compatible) and `/anthropic/v1/models`, then routes each chat request on the matching protocol — the same dual-catalog approach as staff-portal.
+
+Dashboard pages query `gen_ai_*` Prometheus series (token usage, request duration, time-to-first-token). If `ENVOY_AI_GATEWAY_METRICS_URL` is unset, the console tries `${ENVOY_AI_GATEWAY_URL}/metrics`. Datum’s public AI hostname does not expose that path — set `ENVOY_AI_GATEWAY_METRICS_URL` to your Prometheus/VictoriaMetrics base (or a port-forward to the extproc admin port). Without a reachable metrics backend, Overview/Models/Leaderboard show zeros. Spend and list prices stay at zero until the gateway exposes pricing.
 
 ## Deploying
 
@@ -47,7 +54,7 @@ Push to a Git repo and import it into Vercel, or use the CLI:
 pnpm build   # check the production build locally first
 ```
 
-If you're connecting a live gateway, add the same environment variables under **Settings → Environment Variables** in your Vercel project.
+Add the gateway environment variables under **Settings → Environment Variables** in your Vercel project.
 
 ### Docker
 
@@ -55,14 +62,8 @@ The repo ships with a multi-stage `Dockerfile` that uses Next.js [standalone out
 
 ```bash
 docker build -t envoy-ai-gateway-console .
-docker run -p 3000:3000 envoy-ai-gateway-console
-```
-
-That runs the console in demo mode on `http://localhost:3000`. To connect a live gateway, pass the environment variables at runtime:
-
-```bash
 docker run -p 3000:3000 \
-  -e ENVOY_AI_GATEWAY_URL=https://your-gateway.example.com/v1 \
+  -e ENVOY_AI_GATEWAY_URL=https://your-gateway.example.com \
   -e ENVOY_AI_GATEWAY_API_KEY=your-token \
   envoy-ai-gateway-console
 ```
@@ -76,7 +77,7 @@ Or with an env file: `docker run -p 3000:3000 --env-file .env.local envoy-ai-gat
 - [Tailwind CSS v4](https://tailwindcss.com/) for styling.
 - [SWR](https://swr.vercel.app/) for data fetching, with [Recharts](https://recharts.org/) for the charts.
 
-Each page renders its shell right away and streams data into the cards independently, so navigation feels like a single-page app rather than waiting on a full-page load. The API routes read through a cached data layer (`lib/data.ts`) using the `use cache` directive.
+Each page renders its shell right away and streams data into the cards independently, so navigation feels like a single-page app rather than waiting on a raw full-page load. The API routes read through a cached data layer (`lib/data.ts`) using the `use cache` directive.
 
 ## Project layout
 
@@ -85,12 +86,10 @@ app/
   (dashboard)/        Overview, logs, leaderboard, models, playground
   api/                Route handlers backed by the cached data layer
 components/            Views, cards, charts, and the app shell
+  playground/         Chat hook + assistant config for the Playground
 lib/
   data.ts             Cached data functions (use cache)
-  gateway.ts          Demo vs. live gateway logic
-  aggregate.ts        Metric aggregation
+  ai-gateway.ts       Dual-protocol gateway client (models + auth + AI SDK)
+  live-metrics.ts     PromQL / scrape → overview & models
+  gateway.ts          Auth helpers, logs stub, data-source labels
 ```
-
-## A note on the data
-
-In demo mode the numbers are generated from a fixed seed, so they look realistic and stay consistent between reloads, but they aren't real. Once you connect a gateway, the console pulls live request data and Prometheus metrics instead.

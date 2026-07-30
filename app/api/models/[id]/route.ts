@@ -8,13 +8,14 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const { id } = await params
+  const { id: raw } = await params
+  const id = decodeURIComponent(raw)
   const { searchParams } = new URL(request.url)
-  const raw = (searchParams.get('range') || '24h') as TimeRange
-  const range = VALID.includes(raw) ? raw : '24h'
-  const { model } = await getModelDetailData(id, range)
+  const rangeParam = (searchParams.get('range') || '24h') as TimeRange
+  const range = VALID.includes(rangeParam) ? rangeParam : '24h'
+  const { model, source } = await getModelDetailData(id, range)
   if (!model) {
     return NextResponse.json({ error: 'Model not found' }, { status: 404 })
   }
-  return NextResponse.json({ model })
+  return NextResponse.json({ model, source })
 }
