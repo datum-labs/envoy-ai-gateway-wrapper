@@ -1,6 +1,6 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import { Suspense, type ReactNode } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import useSWR from 'swr'
@@ -70,9 +70,56 @@ function DataSourceFooter() {
   )
 }
 
-export function AppShell({ children }: { children: ReactNode }) {
+function NavMenu() {
   const pathname = usePathname()
 
+  return (
+    <SidebarMenu>
+      {nav.map((item) => (
+        <SidebarMenuItem key={item.href}>
+          <SidebarMenuButton
+            asChild
+            isActive={isActive(pathname, item.href)}
+            tooltip={item.title}
+          >
+            <Link href={item.href}>
+              <item.icon className="size-4" />
+              <span>{item.title}</span>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      ))}
+    </SidebarMenu>
+  )
+}
+
+function NavMenuFallback() {
+  return (
+    <SidebarMenu>
+      {nav.map((item) => (
+        <SidebarMenuItem key={item.href}>
+          <SidebarMenuButton asChild tooltip={item.title}>
+            <Link href={item.href}>
+              <item.icon className="size-4" />
+              <span>{item.title}</span>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      ))}
+    </SidebarMenu>
+  )
+}
+
+function HeaderTitle() {
+  const pathname = usePathname()
+  return (
+    <span className="text-sm font-medium text-muted-foreground">
+      {nav.find((n) => isActive(pathname, n.href))?.title ?? 'Console'}
+    </span>
+  )
+}
+
+export function AppShell({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider>
       <Sidebar>
@@ -89,22 +136,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           <SidebarGroup>
             <SidebarGroupLabel>Platform</SidebarGroupLabel>
             <SidebarGroupContent>
-              <SidebarMenu>
-                {nav.map((item) => (
-                  <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={isActive(pathname, item.href)}
-                      tooltip={item.title}
-                    >
-                      <Link href={item.href}>
-                        <item.icon className="size-4" />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
+              <Suspense fallback={<NavMenuFallback />}>
+                <NavMenu />
+              </Suspense>
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
@@ -116,9 +150,9 @@ export function AppShell({ children }: { children: ReactNode }) {
         <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-4 border-b border-border bg-background/80 px-4 backdrop-blur">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1" />
-            <span className="text-sm font-medium text-muted-foreground">
-              {nav.find((n) => isActive(pathname, n.href))?.title ?? 'Console'}
-            </span>
+            <Suspense fallback={<span className="text-sm font-medium text-muted-foreground">Console</span>}>
+              <HeaderTitle />
+            </Suspense>
           </div>
           <ThemeToggle />
         </header>
