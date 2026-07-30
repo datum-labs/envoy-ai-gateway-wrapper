@@ -98,6 +98,9 @@ export interface LogsResponse {
 }
 
 export interface DataSourceInfo {
-  mode: 'live' | 'demo'
+  /** Gateway URL + token configured, or not. */
+  mode: 'live' | 'unconfigured'
+  /** Whether overview/models metrics are reachable. */
+  metrics: 'live' | 'unavailable'
   gatewayUrl: string | null
 }
