@@ -1,7 +1,7 @@
 # Based on the official Next.js Docker example (standalone mode):
 # https://github.com/vercel/next.js/tree/canary/examples/with-docker
 
-ARG NODE_VERSION=24-slim
+ARG NODE_VERSION=26-slim
 
 # ============================================
 # Stage 1: Install dependencies
