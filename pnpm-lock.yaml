@@ -13,19 +13,19 @@ importers:
     dependencies:
       '@ai-sdk/anthropic':
         specifier: ^4.0.24
-        version: 4.0.24(zod@4.4.3)
+        version: 4.0.24(zod@4.6.6)
       '@ai-sdk/openai-compatible':
         specifier: ^2.0.63
-        version: 2.0.63(zod@4.4.3)
+        version: 2.0.63(zod@4.6.6)
       '@ai-sdk/react':
         specifier: ^4.0.45
-        version: 4.0.45(react@19.2.8)(zod@4.4.3)
+        version: 4.0.45(react@19.2.8)(zod@4.6.6)
       '@base-ui/react':
         specifier: ^1.5.0
         version: 1.5.0(@date-fns/tz@1.4.1)(@types/react@19.2.14)(date-fns@4.1.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@datum-cloud/datum-ui':
         specifier: ^1.6.1
-        version: 1.6.1(e010d00b331dfd1b2fd77630978aa970)
+        version: 1.6.1(30b57765e0d3b76b55291ca96bec3592)
       '@streamdown/code':
         specifier: ^1.1.1
         version: 1.1.1(react@19.2.8)
@@ -46,7 +46,7 @@ importers:
         version: 1.6.1(next@16.2.6(@babel/core@7.29.7)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
       ai:
         specifier: ^7.0.42
-        version: 7.0.42(zod@4.4.3)
+        version: 7.0.42(zod@4.6.6)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -91,7 +91,7 @@ importers:
         version: 1.4.0
       zod:
         specifier: ^4.4.3
-        version: 4.4.3
+        version: 4.6.6
     devDependencies:
       '@tailwindcss/postcss':
         specifier: ^4.2.0
@@ -4073,56 +4073,56 @@ packages:
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
-  zod@4.4.3:
-    resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
+  zod@4.6.6:
+    resolution: {integrity: sha512-4UmzQUF5fxvfcYHlbjBmejU+w+hbDnWFx4aS8kBx7nPBHcO2SqPbpAG8snbdg+Xse4pRefR98hgjFgIMCI/UhA==}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
 
 snapshots:
 
-  '@ai-sdk/anthropic@4.0.24(zod@4.4.3)':
+  '@ai-sdk/anthropic@4.0.24(zod@4.6.6)':
     dependencies:
       '@ai-sdk/provider': 4.0.4
-      '@ai-sdk/provider-utils': 5.0.15(zod@4.4.3)
-      zod: 4.4.3
+      '@ai-sdk/provider-utils': 5.0.15(zod@4.6.6)
+      zod: 4.6.6
 
-  '@ai-sdk/gateway@4.0.32(zod@4.4.3)':
+  '@ai-sdk/gateway@4.0.32(zod@4.6.6)':
     dependencies:
       '@ai-sdk/provider': 4.0.4
-      '@ai-sdk/provider-utils': 5.0.15(zod@4.4.3)
+      '@ai-sdk/provider-utils': 5.0.15(zod@4.6.6)
       '@vercel/oidc': 3.2.0
-      zod: 4.4.3
+      zod: 4.6.6
 
-  '@ai-sdk/mcp@2.0.19(zod@4.4.3)':
+  '@ai-sdk/mcp@2.0.19(zod@4.6.6)':
     dependencies:
       '@ai-sdk/provider': 4.0.4
-      '@ai-sdk/provider-utils': 5.0.15(zod@4.4.3)
+      '@ai-sdk/provider-utils': 5.0.15(zod@4.6.6)
       pkce-challenge: 5.0.1
-      zod: 4.4.3
+      zod: 4.6.6
 
-  '@ai-sdk/openai-compatible@2.0.63(zod@4.4.3)':
+  '@ai-sdk/openai-compatible@2.0.63(zod@4.6.6)':
     dependencies:
       '@ai-sdk/provider': 3.0.14
-      '@ai-sdk/provider-utils': 4.0.41(zod@4.4.3)
-      zod: 4.4.3
+      '@ai-sdk/provider-utils': 4.0.41(zod@4.6.6)
+      zod: 4.6.6
 
-  '@ai-sdk/provider-utils@4.0.41(zod@4.4.3)':
+  '@ai-sdk/provider-utils@4.0.41(zod@4.6.6)':
     dependencies:
       '@ai-sdk/provider': 3.0.14
       '@standard-schema/spec': 1.1.0
       eventsource-parser: 3.1.0
       undici: 5.29.0
-      zod: 4.4.3
+      zod: 4.6.6
 
-  '@ai-sdk/provider-utils@5.0.15(zod@4.4.3)':
+  '@ai-sdk/provider-utils@5.0.15(zod@4.6.6)':
     dependencies:
       '@ai-sdk/provider': 4.0.4
       '@standard-schema/spec': 1.1.0
       '@workflow/serde': 4.1.0
       eventsource-parser: 3.1.0
       undici: 7.28.0
-      zod: 4.4.3
+      zod: 4.6.6
 
   '@ai-sdk/provider@3.0.14':
     dependencies:
@@ -4132,12 +4132,12 @@ snapshots:
     dependencies:
       json-schema: 0.4.0
 
-  '@ai-sdk/react@4.0.45(react@19.2.8)(zod@4.4.3)':
+  '@ai-sdk/react@4.0.45(react@19.2.8)(zod@4.6.6)':
     dependencies:
-      '@ai-sdk/mcp': 2.0.19(zod@4.4.3)
+      '@ai-sdk/mcp': 2.0.19(zod@4.6.6)
       '@ai-sdk/provider': 4.0.4
-      '@ai-sdk/provider-utils': 5.0.15(zod@4.4.3)
-      ai: 7.0.42(zod@4.4.3)
+      '@ai-sdk/provider-utils': 5.0.15(zod@4.6.6)
+      ai: 7.0.42(zod@4.6.6)
       react: 19.2.8
       swr: 2.4.2(react@19.2.8)
       throttleit: 2.1.0
@@ -4419,7 +4419,7 @@ snapshots:
   '@date-fns/tz@1.4.1':
     optional: true
 
-  '@datum-cloud/datum-ui@1.6.1(e010d00b331dfd1b2fd77630978aa970)':
+  '@datum-cloud/datum-ui@1.6.1(30b57765e0d3b76b55291ca96bec3592)':
     dependencies:
       '@radix-ui/react-avatar': 1.2.2(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@radix-ui/react-checkbox': 1.3.7(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -4454,13 +4454,13 @@ snapshots:
       '@tiptap/extension-underline': 3.29.2(@tiptap/core@3.29.2(@tiptap/pm@3.29.2))
       '@tiptap/react': 3.29.2(@floating-ui/dom@1.7.6)(@tiptap/core@3.29.2(@tiptap/pm@3.29.2))(@tiptap/pm@3.29.2)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@tiptap/starter-kit': 3.29.2
-      ai: 7.0.42(zod@4.4.3)
+      ai: 7.0.42(zod@4.6.6)
       date-fns: 4.1.0
       motion: 12.43.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       recharts: 3.9.2(@types/react@19.2.14)(react-dom@19.2.8(react@19.2.8))(react-is@19.2.7)(react@19.2.8)(redux@5.0.1)
       sonner: 2.0.7(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       streamdown: 2.5.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      zod: 4.4.3
+      zod: 4.6.6
     transitivePeerDependencies:
       - '@noble/hashes'
       - '@types/react'
@@ -5754,12 +5754,12 @@ snapshots:
 
   agent-base@7.1.4: {}
 
-  ai@7.0.42(zod@4.4.3):
+  ai@7.0.42(zod@4.6.6):
     dependencies:
-      '@ai-sdk/gateway': 4.0.32(zod@4.4.3)
+      '@ai-sdk/gateway': 4.0.32(zod@4.6.6)
       '@ai-sdk/provider': 4.0.4
-      '@ai-sdk/provider-utils': 5.0.15(zod@4.4.3)
-      zod: 4.4.3
+      '@ai-sdk/provider-utils': 5.0.15(zod@4.6.6)
+      zod: 4.6.6
 
   ajv-formats@3.0.1(ajv@8.20.0):
     optionalDependencies:
@@ -8317,6 +8317,6 @@ snapshots:
 
   zod@3.25.76: {}
 
-  zod@4.4.3: {}
+  zod@4.6.6: {}
 
   zwitch@2.0.4: {}
