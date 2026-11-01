@@ -17,7 +17,7 @@ jobs:
       contents: read
       packages: write
       id-token: write
-    uses: datum-cloud/actions/.github/workflows/publish-docker.yaml@v1.20.0
+    uses: datum-cloud/actions/.github/workflows/publish-docker.yaml@v1.26.0
     with:
       image-name: envoy-ai-gateway-dashboard
       target: production
@@ -30,7 +30,7 @@ jobs:
       id-token: write
       contents: read
       packages: write
-    uses: datum-cloud/actions/.github/workflows/publish-kustomize-bundle.yaml@v1.20.0
+    uses: datum-cloud/actions/.github/workflows/publish-kustomize-bundle.yaml@v1.26.0
     with:
       bundle-name: ghcr.io/datum-labs/envoy-ai-gateway-dashboard-kustomize
       image-name: ghcr.io/datum-labs/envoy-ai-gateway-dashboard
