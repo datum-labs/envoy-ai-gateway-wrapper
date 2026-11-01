@@ -1,7 +1,7 @@
 # Based on the official Next.js Docker example (standalone mode):
 # https://github.com/vercel/next.js/tree/canary/examples/with-docker
 
-ARG NODE_VERSION=24-slim
+ARG NODE_VERSION=26-slim
 
 # ============================================
 # Stage 1: Install dependencies
@@ -13,7 +13,7 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
-    corepack enable pnpm && pnpm install --frozen-lockfile
+    npm install -g pnpm@10.34.5 && pnpm install --frozen-lockfile
 
 # ============================================
 # Stage 2: Build the application
@@ -31,7 +31,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ARG BASE_PATH=/dashboard
 ENV BASE_PATH=${BASE_PATH}
 
-RUN corepack enable pnpm && pnpm build
+RUN npm install -g pnpm@10.34.5 && pnpm build
 
 # ============================================
 # Stage 3: Production runtime
